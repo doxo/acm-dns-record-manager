@@ -10,7 +10,7 @@ Resources:
   ProcessCloudFormationEventsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: nodejs8.10
+      Runtime: nodejs16.x
       Timeout: 60
       Handler: index.handler
       CodeUri: src/
