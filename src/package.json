@@ -1,0 +1,25 @@
+{
+  "name": "acm-dns-record-manager",
+  "version": "1.0.0",
+  "description": "This application processes events from CloudFormation to create CNAME records in Route 53 for certificates issued by _Amazon Certificate Manager_ (ACM) with DNS validation method.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/doxo/acm-dns-record-manager.git"
+  },
+  "keywords": ["acm", "route53", "lambda", "certificate", "dns"],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/doxo/acm-dns-record-manager/issues"
+  },
+  "homepage": "https://github.com/doxo/acm-dns-record-manager#readme",
+  "dependencies": {
+    "@aws-sdk/client-acm": "^3.946.0",
+    "@aws-sdk/client-route-53": "^3.946.0"
+  }
+}

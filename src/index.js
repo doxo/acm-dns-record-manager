@@ -1,13 +1,14 @@
 'use strict';
 
-const aws = require('aws-sdk');
+const { Route53Client, ChangeResourceRecordSetsCommand, ListResourceRecordSetsCommand } = require('@aws-sdk/client-route-53');
+const { ACMClient, ListTagsForCertificateCommand, DescribeCertificateCommand } = require('@aws-sdk/client-acm');
 
-const route53 = new aws.Route53();
-const acm = new aws.ACM();
+const route53Client = new Route53Client();
+const acmClient = new ACMClient();
 
 exports.handler = async (event) => {
   await Promise.all(event.Records.map((record) => {
-    return this.processEvent(record);
+    return exports.processEvent(record);
   }));
 };
 
@@ -72,7 +73,8 @@ async function getHostedZoneIdForCertificate(arn) {
   };
 
   try {
-    const result = await acm.listTagsForCertificate(params).promise();
+    const command = new ListTagsForCertificateCommand(params);
+    const result = await acmClient.send(command);
     return getHostedZoneIdFromTags(result.Tags);
   } catch (error) {
     console.log('Failed to get tags for certificate ' + arn);
@@ -103,7 +105,8 @@ async function doGetResourceRecordsForCertificate(arn) {
   };
 
   try {
-    let result = await acm.describeCertificate(params).promise();
+    const command = new DescribeCertificateCommand(params);
+    const result = await acmClient.send(command);
 
     let resourceRecords = result.Certificate.DomainValidationOptions.filter((domain) => {
       return (domain.ResourceRecord !== undefined);
@@ -143,7 +146,8 @@ async function createCNAMERecord(records, hostedZoneId) {
   };
 
   try {
-    await route53.changeResourceRecordSets(params).promise();
+    const command = new ChangeResourceRecordSetsCommand(params);
+    await route53Client.send(command);
   } catch (error) {
     console.log('Failed to create Route 53 record set: ' + error);
     throw error;
@@ -175,7 +179,8 @@ async function deleteCNAMERecord(records, hostedZoneId) {
   };
 
   try {
-    await route53.changeResourceRecordSets(params).promise();
+    const command = new ChangeResourceRecordSetsCommand(params);
+    await route53Client.send(command);
   } catch (error) {
     console.log('Failed to delete Route 53 record set: ' + error);
     throw error;
@@ -188,7 +193,8 @@ async function getACMRecords(hostedZoneId) {
   };
 
   try {
-    const result = await route53.listResourceRecordSets(params).promise();
+    const command = new ListResourceRecordSetsCommand(params);
+    const result = await route53Client.send(command);
     return result.ResourceRecordSets.filter((record) => {
       if (record.Type !== 'CNAME') {
         return false;
