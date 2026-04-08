@@ -1,2 +1,4 @@
 sam-template-output.yaml
 node_modules/
+mcp-vscode.json
+.claude/settings.local.json
